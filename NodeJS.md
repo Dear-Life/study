@@ -92,3 +92,57 @@ fs.rmdir("public", (err) => {
   }
 });
 ```
+
+### http 模块
+
+```javascript
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+const { resolve } = require("path");
+
+http
+  .createServer(function (req, res) {
+    if (req.url === "/favicon.ico") {
+      return;
+    }
+    // console.log('method', req.method)
+    // console.log('url', req.url)
+    // console.log('httpVersion', req.httpVersion)
+    // console.log('headers', req.headers)
+
+    // GET 参数
+    // console.log(url.parse(req.url, true).query)
+
+    // POST 参数
+    // if (req.method === "POST") {
+    //     let data = ""
+    //     req.on("data", function (chunk) {
+    //         data += chunk
+    //     })
+    //     req.on("end", function () {
+    //         console.log(new url.URLSearchParams(data))
+    //     })
+    // }
+
+    // 响应处理
+    // res.setHeader("name", "YISA")
+    // text/plain
+    // res.setHeader("content-type", "text/html")
+    // res.statusCode = 404
+    // res.end("hello world")
+
+    // 静态资源
+    let filePath = "public";
+    if (req.url === "/") {
+      filePath += "/index.html";
+    } else {
+      filePath += url.parse(req.url, true).pathname;
+    }
+
+    const data = fs.readFileSync(resolve(__dirname, filePath));
+    res.write(data);
+    res.end();
+  })
+  .listen(80);
+```
